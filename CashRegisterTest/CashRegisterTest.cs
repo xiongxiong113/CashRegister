@@ -46,5 +46,19 @@ namespace CashRegisterTest
 			//then
 			spyPrinter.Verify(_ => _.Print("moq stub purchase"));
         }
+
+		[Fact]
+		public void Should_throw_HardwareException_when_run_process_given_stub_printer()
+		{
+            //given
+            var printer = new Mock<Printer>();
+            var cashRegister = new CashRegister(printer.Object);
+            var purchase = new Purchase();
+			printer.Setup(_ => _.Print(It.IsAny<string>())).Throws(new PrinterOutOfPaperException());
+            //when
+			//then
+			var exception = Assert.Throws<HardwareException>(() => cashRegister.Process(purchase));
+			Assert.Equal("Printer is out of paper.", exception.Message);
+        }
     }
 }
